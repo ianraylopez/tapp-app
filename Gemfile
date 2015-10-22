@@ -43,4 +43,4 @@ group :development, :test do
   gem 'spring'
 end
 
-gem 'postgresql'
+gem 'pg', '~> 0.18.3'

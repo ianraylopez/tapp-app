@@ -1,5 +1,17 @@
 class API::V1::UsersController < ApplicationController
 
+	def index
+		@users = User.all
+
+		respond_to do |format|
+	      if @users
+	        format.json { render json: @users, status: :created }
+	      else
+	        format.json { render json: @users.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
 	def create
 		@user = User.new()
 	    @user.twitter_id = params[:twitter_id]
@@ -139,28 +151,26 @@ class API::V1::UsersController < ApplicationController
 
 	private
 
-		def user_params
-			params.require(:user).permit(:twitter_id, :name, :screen_name, :location, :description, :is_contributors_enabled,
-				:profile_image_url, :profile_image_url_https, :profile_image_url_https, :is_default_profile_image, :url, 
-				:is_protected, :followers_count, :status, :profile_background_color, :profile_text_color, :profile_link_color, 
-				:profile_sidebar_fill_color, :profile_sidebar_border_color, :profile_use_background_image, :is_default_profile, 
-				:show_all_inline_media, :friends_count, :created_at, :favourites_count, :utc_offset, :time_zone, 
-				:profile_background_image_url, :profile_background_image_url_https, :profile_background_tiled, :language,
-				:statuses_count, :is_geo_enabled, :is_verified, :translator, :listed_count, :is_follow_request_sent)
-		end
+	def user_params
+		params.require(:user).permit(:twitter_id, :name, :screen_name, :location, :description, :is_contributors_enabled,
+			:profile_image_url, :profile_image_url_https, :profile_image_url_https, :is_default_profile_image, :url, 
+			:is_protected, :followers_count, :status, :profile_background_color, :profile_text_color, :profile_link_color, 
+			:profile_sidebar_fill_color, :profile_sidebar_border_color, :profile_use_background_image, :is_default_profile, 
+			:show_all_inline_media, :friends_count, :created_at, :favourites_count, :utc_offset, :time_zone, 
+			:profile_background_image_url, :profile_background_image_url_https, :profile_background_tiled, :language,
+			:statuses_count, :is_geo_enabled, :is_verified, :translator, :listed_count, :is_follow_request_sent)
+	end
 
-		def friend_params
-			params.require(:friend).permit(:user_id, :follower_id, :friendship_dt)
-		end
+	def friend_params
+		params.require(:friend).permit(:user_id, :follower_id, :friendship_dt)
+	end
 
-		def app_params
-			params.require(:app).permit(:name, :package_name, :icon_url, :link, :category, :description)
-		end
+	def app_params
+		params.require(:app).permit(:name, :package_name, :icon_url, :link, :category, :description)
+	end
 
-		def user_apps_params
-			params.require(:user_apps).permit(:user_id, :app_id)
-		end
-
-    end
+	def user_apps_params
+		params.require(:user_apps).permit(:user_id, :app_id)
+	end
 
 end

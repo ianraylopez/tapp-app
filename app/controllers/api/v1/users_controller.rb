@@ -5,7 +5,7 @@ class API::V1::UsersController < ApplicationController
 
 		respond_to do |format|
 	      if @users
-	        format.json { render json: @users, status: :created }
+	        format.json { render json: @users, status: :ok }
 	      else
 	        format.json { render json: @users.errors, status: :unprocessable_entity }
 	      end

@@ -1,11 +1,15 @@
 Rails.application.routes.draw do
-  
-  namespace :api, :defaults => {:format => :json} do
+
+  namespace :api do
     namespace :v1 do
-      resources :users
+      resources :users do
+        collection do
+          get :test
+        end
+      end
     end
   end
-  
+
   
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
@@ -37,6 +41,7 @@ Rails.application.routes.draw do
   # Example resource route with sub-resources:
   #   resources :products do
   #     resources :comments, :sales
+
   #     resource :seller
   #   end
 

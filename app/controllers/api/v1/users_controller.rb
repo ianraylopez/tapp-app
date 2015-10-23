@@ -1,15 +1,7 @@
 class API::V1::UsersController < ApplicationController
 
-	def index
-		@users = User.all
-
-		respond_to do |format|
-	      if @users
-	        format.json { render json: @users, status: :ok }
-	      else
-	        format.json { render json: @users.errors, status: :unprocessable_entity }
-	      end
-	    end
+	def test
+		@test = "this is a test page!"
 	end
 
 	def create

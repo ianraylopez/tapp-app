@@ -44,4 +44,4 @@ group :development, :test do
 end
 
 gem 'pg', '~> 0.18.3'
-gem 'mysql2', '~> 0.4.1'
+gem 'mysql2', '~> 0.3.18'

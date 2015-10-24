@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'bundler', '~> 1.10', '>= 1.10.6'
 gem 'rake', '~> 10.4', '>= 10.4.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'

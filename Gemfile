@@ -48,4 +48,4 @@ end
 gem 'pg', '~> 0.18.3'
 gem 'mysql2', '~> 0.3.18'
 gem 'rdoc', '~> 4.2'
-gem 'unicorn', '~> 4.9'
+#gem 'unicorn', '~> 4.9'

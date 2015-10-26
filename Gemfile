@@ -1,10 +1,9 @@
 source 'https://rubygems.org'
 
-gem 'bundler', '~> 1.10', '>= 1.10.5'
 gem 'rake', '~> 10.4', '>= 10.4.2'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '4.2.3'
+gem 'rails', '4.2'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
 # Use SCSS for stylesheets

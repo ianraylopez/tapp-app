@@ -2,6 +2,13 @@ class API::V1::UsersController < ApplicationController
 
 	def test
 		@test = "this is a test page!"
+		respond_to do |format|
+	      if @test
+	        format.json { render json: @test, status: :created }
+	      else
+	        format.json { render json: @test.errors, status: :unprocessable_entity }
+	      end
+	    end
 	end
 
 	def create

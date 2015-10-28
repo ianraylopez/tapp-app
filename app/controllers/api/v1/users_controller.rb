@@ -49,14 +49,22 @@ class API::V1::UsersController < ApplicationController
    		@user.translator = params[:translator]
    		@user.listed_count = params[:listed_count]
    		@user.is_follow_request_sent = params[:is_follow_request_sent]
+
+   		if params[:twitter_id] == nil || params[:twitter_id] == ''
+   			respond_to do |format|
+   				format.json { render json: "Twitter ID is required.", status: :unprocessable_entity }
+   			end
+   		else
+   			respond_to do |format|
+		      if @user.save
+		        format.json { render json: "OK", status: :ok }
+		      else
+		        format.json { render json: @user.errors, status: :unprocessable_entity }
+		      end
+		    end
+   		end	
 	    
-	    respond_to do |format|
-	      if @user.save
-	        format.json { render json: "OK", status: :ok }
-	      else
-	        format.json { render json: @user.errors, status: :unprocessable_entity }
-	      end
-	    end
+	    
 	end
 
 	def follow

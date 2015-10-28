@@ -1,10 +1,10 @@
 class API::V1::UsersController < ApplicationController
 
 	def test
-		@test = "this is a test page!"
+		@test = "OK"
 		respond_to do |format|
 	      if @test
-	        format.json { head :no_content, status: :ok }
+	        format.json { render json: @test, status: :ok }
 	      else
 	        format.json { render json: @test.errors, status: :unprocessable_entity }
 	      end

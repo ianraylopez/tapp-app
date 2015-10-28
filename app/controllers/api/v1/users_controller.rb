@@ -52,7 +52,7 @@ class API::V1::UsersController < ApplicationController
 	    
 	    respond_to do |format|
 	      if @user.save
-	        format.json { head :no_content, status: :created }
+	        format.json { render json: "OK", status: :ok }
 	      else
 	        format.json { render json: @user.errors, status: :unprocessable_entity }
 	      end

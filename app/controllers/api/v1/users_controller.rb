@@ -4,7 +4,7 @@ class API::V1::UsersController < ApplicationController
 		@test = "this is a test page!"
 		respond_to do |format|
 	      if @test
-	        format.json { render json: @test, status: :created }
+	        format.json { head :no_content, status: :created }
 	      else
 	        format.json { render json: @test.errors, status: :unprocessable_entity }
 	      end
@@ -146,6 +146,8 @@ class API::V1::UsersController < ApplicationController
 	def feed
 		@user = User.where(twitter_id: params[:user_id])
 		@followings = Friend.where(user_id: params[:user_id])
+
+		
 	end
 
 	private

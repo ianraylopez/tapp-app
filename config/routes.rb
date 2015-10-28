@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       resources :users do
         collection do
           get :test
+          get :create_user
         end
       end
     end

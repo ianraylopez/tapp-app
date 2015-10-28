@@ -11,7 +11,7 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
-	def create
+	def create_user
 		@user = User.new()
 	    @user.twitter_id = params[:twitter_id]
 	    @user.name = params[:name]
@@ -71,7 +71,7 @@ class API::V1::UsersController < ApplicationController
 
 		respond_to do |format|
 	      if @friend.save
-	        format.json { head :no_content, status: :created }
+	        format.json { render json: "OK", status: :ok }
 	      else
 	        format.json { render json: @friend.errors, status: :unprocessable_entity }
 	      end
@@ -136,7 +136,7 @@ class API::V1::UsersController < ApplicationController
 		
 		respond_to do |format|
 	      if @user_app.save
-	        format.json { head :no_content, status: :created }
+	        format.json { render json: "OK", status: :ok }
 	      else
 	        format.json { render json: @user_app.errors, status: :unprocessable_entity }
 	      end
@@ -146,8 +146,17 @@ class API::V1::UsersController < ApplicationController
 	def feed
 		@user = User.where(twitter_id: params[:user_id])
 		@followings = Friend.where(user_id: params[:user_id])
+		@friends = [params[:user_id]]
+		@followings.each { |f| @friends << f.user_id} 
 
+		@data = []
+		@dataset = {}
 
+		@feed = UserApp.where(user_id: @friends).order(created_at: :desc).limit(100)
+
+		@feed.each do | f |
+
+		end
 	end
 
 	private

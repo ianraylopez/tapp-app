@@ -1,7 +1,5 @@
 class API::V1::UsersController < ApplicationController
 
-	skip_before_filter  :verify_authenticity_token
-
 	def test
 		@test = "OK"
 		respond_to do |format|

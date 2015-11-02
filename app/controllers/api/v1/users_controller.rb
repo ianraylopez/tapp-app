@@ -14,6 +14,7 @@ class API::V1::UsersController < ApplicationController
 	def create_user
 		@user = User.new()
 	    @user.twitter_id = params[:twitter_id]
+=begin	    
 	    @user.name = params[:name]
 	    @user.screen_name = params[:screen_name]
 	    @user.location = params[:location]
@@ -49,6 +50,7 @@ class API::V1::UsersController < ApplicationController
    		@user.translator = params[:translator]
    		@user.listed_count = params[:listed_count]
    		@user.is_follow_request_sent = params[:is_follow_request_sent]
+=end
 
    		if params[:twitter_id] == nil || params[:twitter_id] == ''
    			respond_to do |format|
@@ -155,15 +157,26 @@ class API::V1::UsersController < ApplicationController
 		@followings = Friend.where(user_id: params[:user_id])
 		@friends = [params[:user_id]]
 		@followings.each { |f| @friends << f.user_id} 
+		@feed = UserApp.where(user_id: @friends).order(created_at: :desc).limit(100)
 
 		@data = []
 		@dataset = {}
 
-		@feed = UserApp.where(user_id: @friends).order(created_at: :desc).limit(100)
-
 		@feed.each do | f |
-
+			@user_details = User.where(twitter_id: f.user_id)
+			@app_details = App.where(app_id: f.app_id)
+			@dataset = {:name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => user_details.profile_image_url}
 		end
+
+		@data << @dataset
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :created }
+	      else
+	        format.json { render json: "error!", status: :unprocessable_entity }
+	      end
+	    end
 	end
 
 	private

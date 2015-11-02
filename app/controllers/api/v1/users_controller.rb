@@ -16,7 +16,6 @@ class API::V1::UsersController < ApplicationController
 	    @user.twitter_id = params[:twitter_id]
 	    @user.name = params[:name]
 	    @user.screen_name = params[:screen_name]
-=begin
 	    @user.location = params[:location]
 	    @user.description = params[:description]
 	    @user.is_contributors_enabled = params[:is_contributors_enabled]
@@ -50,7 +49,6 @@ class API::V1::UsersController < ApplicationController
    		@user.translator = params[:translator]
    		@user.listed_count = params[:listed_count]
    		@user.is_follow_request_sent = params[:is_follow_request_sent]
-=end
 
    		if params[:twitter_id] == nil || params[:twitter_id] == ''
    			respond_to do |format|

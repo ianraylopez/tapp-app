@@ -1,5 +1,7 @@
 class API::V1::UsersController < ApplicationController
 
+	skip_before_filter  :verify_authenticity_token
+
 	def test
 		@test = "OK"
 		respond_to do |format|
@@ -14,9 +16,9 @@ class API::V1::UsersController < ApplicationController
 	def create_user
 		@user = User.new()
 	    @user.twitter_id = params[:twitter_id]
-=begin	    
 	    @user.name = params[:name]
 	    @user.screen_name = params[:screen_name]
+=begin
 	    @user.location = params[:location]
 	    @user.description = params[:description]
 	    @user.is_contributors_enabled = params[:is_contributors_enabled]

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151019022903) do
+ActiveRecord::Schema.define(version: 20151103032927) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -65,7 +65,7 @@ ActiveRecord::Schema.define(version: 20151019022903) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.integer  "twitter_id"
+    t.integer  "twitter_id",                         limit: 8
     t.string   "name"
     t.string   "screen_name"
     t.string   "location"
@@ -87,7 +87,7 @@ ActiveRecord::Schema.define(version: 20151019022903) do
     t.boolean  "is_default_profile"
     t.boolean  "show_all_inline_media"
     t.integer  "friends_count"
-    t.datetime "created_at",                         null: false
+    t.datetime "created_at",                                   null: false
     t.integer  "favourites_count"
     t.integer  "utc_offset"
     t.string   "time_zone"
@@ -101,7 +101,7 @@ ActiveRecord::Schema.define(version: 20151019022903) do
     t.boolean  "translator"
     t.integer  "listed_count"
     t.boolean  "is_follow_request_sent"
-    t.datetime "updated_at",                         null: false
+    t.datetime "updated_at",                                   null: false
   end
 
   add_index "users", ["screen_name"], name: "index_users_on_screen_name", using: :btree

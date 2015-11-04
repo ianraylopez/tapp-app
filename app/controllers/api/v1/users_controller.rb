@@ -1,5 +1,7 @@
 class API::V1::UsersController < ApplicationController
 
+	require 'google_play_search'
+
 	def test
 		@test = "OK"
 		respond_to do |format|
@@ -68,12 +70,9 @@ class API::V1::UsersController < ApplicationController
 
 	def follow
 		# will just use Friend for now. followers can be generated from this table already
-		@user = User.where(twitter_id: params[:user_id])
-		@followed = User.where(twitter_id: params[:followed_id])
-
 		@friend = Friend.new()
-		@friend.user_id = @followed
-		@friend.follower_id = @user
+		@friend.user_id = params[:followed_id]
+		@friend.friend_id = params[:twitter_id]
 		@friend.friendship_dt = Time.now
 
 		respond_to do |format|
@@ -81,6 +80,50 @@ class API::V1::UsersController < ApplicationController
 	        format.json { render json: "OK", status: :ok }
 	      else
 	        format.json { render json: @friend.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def unfollow
+		@friendship = Friend.where("user_id = ? AND friend_id = ?", params[:followed_id], params[:twitter_id])
+
+		respond_to do |format|
+	      if Friend.destroy(@friendship)
+	        format.json { render json: "OK", status: :ok }
+	      else
+	        format.json { render json: @friendship.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def add_user_app
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+		@app = App.where("package_name = ?", params[:package]).first
+
+		if @app.id == nil
+			# insert app
+			@new_app = App.new()
+			@new_app.name = params[:app]
+			@new_app.package_name = params[:package]
+			#@new_app.icon_url = params[:icon_url]
+			#@new_app.link = params[:link]
+			#@new_app.category = params[:category]
+			#@new_app.description = params[:description]
+			@new_app.save
+			@app_id = @new_app.id
+		else
+			@app_id = @app.id
+		end
+
+		@user_app = UserApp.new()
+		@user_app.user_id = @user.twitter_id
+		@user_app.app_id = @app_id
+		
+		respond_to do |format|
+	      if @user_app.save
+	        format.json { render json: "OK", status: :ok }
+	      else
+	        format.json { render json: @user_app.errors, status: :unprocessable_entity }
 	      end
 	    end
 	end
@@ -119,36 +162,7 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
-	def add_user_app
-		@user = User.where(twitter_id: params[:user_id])
-		@app = App.where(package_name: params[:package_name])
-
-		if @app.length == 0
-			# insert app
-			@new_app.name = params[:name]
-			@new_app.package_name = params[:package_name]
-			@new_app.icon_url = params[:icon_url]
-			@new_app.link = params[:link]
-			@new_app.category = params[:category]
-			@new_app.description = params[:description]
-			@new_app.save
-			@app_id = @new_app.id
-		else
-			@app_id = @app.id
-		end
-
-		@user_app = UserApp.new()
-		@user_app.user_id = @user.twitter_id
-		@user_app.app_id = @app_id
-		
-		respond_to do |format|
-	      if @user_app.save
-	        format.json { render json: "OK", status: :ok }
-	      else
-	        format.json { render json: @user_app.errors, status: :unprocessable_entity }
-	      end
-	    end
-	end
+	
 
 	def feed
 		@user = User.where(twitter_id: params[:user_id])
@@ -190,7 +204,7 @@ class API::V1::UsersController < ApplicationController
 	end
 
 	def friend_params
-		params.require(:friend).permit(:user_id, :follower_id, :friendship_dt)
+		params.require(:friend).permit(:user_id, :friend_id, :friendship_dt)
 	end
 
 	def app_params

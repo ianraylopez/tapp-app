@@ -6,6 +6,9 @@ Rails.application.routes.draw do
         collection do
           get :test
           post :create_user
+          post :follow
+          post :unfollow
+          post :add_user_app
         end
       end
     end

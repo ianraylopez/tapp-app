@@ -100,15 +100,19 @@ class API::V1::UsersController < ApplicationController
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first
 		@app = App.where("package_name = ?", params[:package]).first
 
-		if @app.id == nil
+		if @app == nil
+			# get app info from Play Store
+			gps = GooglePlaySearch::Search.new(:category=>"apps")
+			app_list = gps.search(params[:app])
+			app = app_list.first
 			# insert app
 			@new_app = App.new()
 			@new_app.name = params[:app]
 			@new_app.package_name = params[:package]
-			#@new_app.icon_url = params[:icon_url]
-			#@new_app.link = params[:link]
-			#@new_app.category = params[:category]
-			#@new_app.description = params[:description]
+			@new_app.icon_url = app.logo_url
+			@new_app.link = app.url
+			@new_app.category = app.category
+			@new_app.description = app.short_description
 			@new_app.save
 			@app_id = @new_app.id
 		else
@@ -121,6 +125,20 @@ class API::V1::UsersController < ApplicationController
 		
 		respond_to do |format|
 	      if @user_app.save
+	        format.json { render json: "OK", status: :ok }
+	      else
+	        format.json { render json: @user_app.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def delete_user_app
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+		@app = App.where("package_name = ?", params[:package]).first
+		@user_app = UserApp.where("user_id = ? AND app_id = ?", @user.twitter_id, @app.id)
+		
+		respond_to do |format|
+	      if UserApp.destroy(@user_app)
 	        format.json { render json: "OK", status: :ok }
 	      else
 	        format.json { render json: @user_app.errors, status: :unprocessable_entity }

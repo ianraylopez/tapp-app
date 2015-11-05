@@ -10,6 +10,9 @@ Rails.application.routes.draw do
           post :unfollow
           post :add_user_app
           post :delete_user_app
+          post :list_following
+          post :list_followers
+          post :feed
         end
       end
     end

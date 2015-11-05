@@ -147,64 +147,97 @@ class API::V1::UsersController < ApplicationController
 	end
 
 	def list_following
-		@user = User.where(twitter_id: params[:user_id])
-		@followings = Friend.where(user_id: params[:user_id])
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+		@followings = Friend.where("friend_id = ?", params[:twitter_id])
+
+		puts @followings.length 
 
 		@data = []
 		@dataset = {}
 
 		@followings.each do | f |
 			# get user details here
-			@user_details = User.where(twitter_id: f.user_id)
+			@user_details = User.where("twitter_id = ?", f.user_id).first
 			# get tapped apps
-			@user_apps_id = App.where(user_id: f.user_id)
+			@user_apps_id = UserApp.where("user_id = ?", f.user_id)
 			@user_apps_count = @user_apps_id.length
 			# get friends
-			@friends = Friend.where(user_id: f.user_id)
+			@friends = Friend.where(friend_id: f.user_id)
 			@friends_count = @friends.length
 			# get followers
-			@followers = Friend.where(friend_id: f.user_id)
+			@followers = Friend.where(user_id: f.user_id)
 			@followers_count = @followers.length
 
-			@dataset = {:name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
+			@data << @dataset
 		end
-
-		@data << @dataset
 
 		respond_to do |format|
 	      if @data.length > 0
-	        format.json { render json: @data, status: :created }
+	        format.json { render json: @data, status: :ok }
 	      else
 	        format.json { head :no_content, status: :no_content }
 	      end
 	    end
 	end
 
-	
+	def list_followers
+		@followers = Friend.where("user_id = ?", params[:twitter_id])
+
+		@data = []
+		@dataset = {}
+
+		@followers.each do | f |
+			# get user details here
+			@user_details = User.where("twitter_id = ?", f.friend_id).first
+			# get tapped apps
+			@user_apps_id = UserApp.where("user_id = ?", f.friend_id)
+			@user_apps_count = @user_apps_id.length
+			# get friends
+			@friends = Friend.where(friend_id: f.friend_id)
+			@friends_count = @friends.length
+			# get followers
+			@followers = Friend.where(user_id: f.friend_id)
+			@followers_count = @followers.length
+
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
+			@data << @dataset
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { head :no_content, status: :no_content }
+	      end
+	    end
+	end
 
 	def feed
-		@user = User.where(twitter_id: params[:user_id])
-		@followings = Friend.where(user_id: params[:user_id])
-		@friends = [params[:user_id]]
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+		@followings = Friend.where("friend_id = ?", params[:twitter_id])
+		@friends = []
 		@followings.each { |f| @friends << f.user_id} 
+
 		@feed = UserApp.where(user_id: @friends).order(created_at: :desc).limit(100)
 
 		@data = []
 		@dataset = {}
 
 		@feed.each do | f |
-			@user_details = User.where(twitter_id: f.user_id)
-			@app_details = App.where(app_id: f.app_id)
-			@dataset = {:name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => user_details.profile_image_url}
+			@user_details = User.where("twitter_id = ?", f.user_id).first
+			@app_details = App.find(f.app_id)
+			@app_count = UserApp.where("app_id = ?", @app_details.id)
+			@app_tapp_count = @app_count.length
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :app_id => @app_details.id, :app_name => @app_details.name, :app_icon => @app_details.icon_url, :app_link => @app_details.link, :app_category => @app_details.category, :app_description => @app_details.description, :app_tapp_count => @app_tapp_count}
+			@data << @dataset
 		end
-
-		@data << @dataset
 
 		respond_to do |format|
 	      if @data.length > 0
 	        format.json { render json: @data, status: :created }
 	      else
-	        format.json { render json: "error!", status: :unprocessable_entity }
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
 	      end
 	    end
 	end

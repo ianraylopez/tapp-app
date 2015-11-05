@@ -235,7 +235,56 @@ class API::V1::UsersController < ApplicationController
 
 		respond_to do |format|
 	      if @data.length > 0
-	        format.json { render json: @data, status: :created }
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def app_details
+		@app = App.where("package_name = ?", params[:package]).first
+		@app_count = UserApp.where("app_id = ?", @app.id)
+		@app_tapp_count = @app_count.length
+		@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
+
+		if @user_app.length == 0
+			@tapped_by_user = 0
+		else
+			@tapped_by_user = 1
+		end
+
+		@data = []
+		@dataset = {}
+
+		@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
+		@data << @dataset
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def app_users
+		@app = App.where("package_name = ?", params[:package]).first
+		@app_users = UserApp.where("app_id = ?", @app.id).limit(100)
+
+		@data = []
+		@dataset = {}
+
+		@app_users.each do | f |
+			@user_details = User.where("twitter_id = ?", f.user_id).first
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :is_verified => @user_details.is_verified}
+			@data << @dataset
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
 	      else
 	        format.json { render json: @data.errors, status: :unprocessable_entity }
 	      end

@@ -13,6 +13,8 @@ Rails.application.routes.draw do
           post :list_following
           post :list_followers
           post :feed
+          post :app_details
+          post :app_users
         end
       end
     end

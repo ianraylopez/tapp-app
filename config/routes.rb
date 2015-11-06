@@ -15,6 +15,8 @@ Rails.application.routes.draw do
           post :feed
           post :app_details
           post :app_users
+          post :user_details
+          post :user_apps
         end
       end
     end

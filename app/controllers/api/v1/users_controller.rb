@@ -271,7 +271,7 @@ class API::V1::UsersController < ApplicationController
 
 	def app_users
 		@app = App.where("package_name = ?", params[:package]).first
-		@app_users = UserApp.where("app_id = ?", @app.id).limit(100)
+		@app_users = UserApp.where("app_id = ?", @app.id).order(created_at: :desc).limit(100)
 
 		@data = []
 		@dataset = {}
@@ -281,6 +281,54 @@ class API::V1::UsersController < ApplicationController
 			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :is_verified => @user_details.is_verified}
 			@data << @dataset
 		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def user_apps
+		@user_apps = UserApp.where("user_id = ?", params[:twitter_id]).order(created_at: :desc)
+
+		@data = []
+		@dataset = {}
+
+		@user_apps.each do | f |
+			@app = App.where("id = ?", f.app_id).first
+
+			@app_count = UserApp.where("app_id = ?", f.app_id)
+			@app_tapp_count = @app_count.length
+
+			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => @app_tapp_count}
+			@data << @dataset
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def user_details
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+		@followings = Friend.where("friend_id = ?", params[:twitter_id])
+		@followers = Friend.where("user_id = ?", params[:twitter_id])
+		@followings_count = @followings.length
+		@followers_count = @followers.length
+
+		@data = []
+		@dataset = {}
+
+		@dataset = {:twitter_id => @user.twitter_id, :name => @user.name, :screen_name => @user.screen_name, :profile_image_url => @user.profile_image_url, :description => @user.description,  :is_verified => @user.is_verified, :followings => @followings_count, :followers => @followers_count}
+			
+		@data << @dataset
 
 		respond_to do |format|
 	      if @data.length > 0

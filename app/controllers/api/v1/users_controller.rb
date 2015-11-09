@@ -339,6 +339,49 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
+	def leaderboard
+		# Leaderboard only shows users which are ranking the highest on Tapp (most tapped apps).
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+		@leaderboard = UserApp.select('user_id, count(app_id) cnt').group("user_id").order("cnt desc").limit(100)
+
+		@data = []
+		@dataset = {}
+
+		@leaderboard.each do | f |
+			@user_details = User.where("twitter_id = ?", f.user_id).first
+			@friend = Friend.where("friend_id = ? AND user_id = ?", @user.twitter_id, f.user_id)
+			# get followers
+			@followers = Friend.where(user_id: f.user_id)
+			@followers_count = @followers.length
+
+			if @friend.length == 0
+				@is_followed = 0
+			else
+				@is_followed = 1
+			end
+
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :description => @user_details.description,  :is_verified => @user_details.is_verified, :followers => @followers_count, :apps => f.cnt, :is_followed => @is_followed}
+		
+		  	@data << @dataset
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def search_user
+
+	end
+
+	def search_app
+
+	end
+
 	private
 
 	def user_params

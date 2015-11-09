@@ -17,6 +17,9 @@ Rails.application.routes.draw do
           post :app_users
           post :user_details
           post :user_apps
+          post :leaderboard
+          post :search_user
+          post :search_app
         end
       end
     end

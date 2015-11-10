@@ -439,6 +439,32 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
+	def popular_apps_overall
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+		@popular = UserApp.select('app_id, count(user_id) cnt').group("app_id").order("cnt desc").limit(100)
+
+		@data = []
+		@dataset = {}
+
+		@popular.each do | f |
+			@app = App.find(f.app_id)
+			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => f.cnt}
+			@data << @dataset
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def popular_apps_followers
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+	end
+
 	private
 
 	def user_params

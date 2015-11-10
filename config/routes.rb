@@ -20,6 +20,8 @@ Rails.application.routes.draw do
           post :leaderboard
           post :search_user
           post :search_app
+          post :popular_apps_overall
+          post :popular_apps_followers
         end
       end
     end

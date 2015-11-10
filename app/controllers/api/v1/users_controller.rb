@@ -375,11 +375,68 @@ class API::V1::UsersController < ApplicationController
 	end
 
 	def search_user
+		@result = User.where("name LIKE ? OR screen_name like ?", "%#{params[:q]}%", "%#{params[:q]}%").limit(100)
 
+		@data = []
+		@dataset = {}
+
+		@result.each do | f |
+			@user_details = User.where("twitter_id = ?", f.twitter_id).first
+			@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], f.twitter_id)
+			# get followers
+			@followers = Friend.where(user_id: f.twitter_id)
+			@followers_count = @followers.length
+			# get apps
+			@app_count = UserApp.where("user_id = ?", f.twitter_id)
+			@app_tapp_count = @app_count.length
+
+			if @friend.length == 0
+				@is_followed = 0
+			else
+				@is_followed = 1
+			end
+
+			@dataset = {:twitter_id => f.twitter_id, :name => f.name, :screen_name => f.screen_name, :profile_image_url => f.profile_image_url, :description => f.description,  :is_verified => f.is_verified, :followers => @followers_count, :apps => @app_tapp_count, :is_followed => @is_followed}
+			@data << @dataset
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	      end
+	    end
 	end
 
 	def search_app
+		@result = App.where("name LIKE ? OR package_name like ?", "%#{params[:q]}%", "%#{params[:q]}%").limit(100)
 
+		@data = []
+		@dataset = {}
+
+		@result.each do | f |
+			@app_count = UserApp.where("app_id = ?", f.id)
+			@app_tapp_count = @app_count.length
+			@user_app = UserApp.where("app_id = ? AND user_id = ?", f.id, params[:twitter_id]).first
+
+			if !@user_app
+				@is_tapped = 0
+			else
+				@is_tapped = 1
+			end
+
+			@dataset = {:app_id => f.id, :app_name => f.name, :app_icon => f.icon_url, :app_link => f.link, :app_category => f.category, :app_description => f.description, :tapp_count => @app_tapp_count, :tapped_by_user => @is_tapped}
+			@data << @dataset
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	      end
+	    end
 	end
 
 	private

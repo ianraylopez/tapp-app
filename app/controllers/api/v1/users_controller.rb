@@ -488,6 +488,18 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
+	def delete_all_friends
+		@friend = Friend.where("friend_id = ?", params[:twitter_id])
+
+		respond_to do |format|
+	      if Friend.destroy(@friend)
+	        format.json { render json: "OK", status: :ok }
+	      else
+	        format.json { render json: @friend.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
 	private
 
 	def user_params

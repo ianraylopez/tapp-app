@@ -168,7 +168,7 @@ class API::V1::UsersController < ApplicationController
 			@followers = Friend.where(user_id: f.user_id)
 			@followers_count = @followers.length
 
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user.profile_image_url, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
 			@data << @dataset
 		end
 
@@ -200,7 +200,7 @@ class API::V1::UsersController < ApplicationController
 			@followers = Friend.where(user_id: f.friend_id)
 			@followers_count = @followers.length
 
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user_details.profile_image_url, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
 			@data << @dataset
 		end
 

@@ -500,6 +500,48 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
+	def find_friends
+		@twitter_friends = params[:twitter_ids].split(",")
+
+		puts @twitter_friends
+
+		@data = []
+		@dataset = {}
+
+		@twitter_friends.each do | f |
+
+			puts "xxxxx"
+			puts f
+
+
+			@user_details = User.where("twitter_id = ?", f).first
+			@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], f)
+			# get followers
+			@followers = Friend.where(user_id: f)
+			@followers_count = @followers.length
+			# get apps
+			@app_count = UserApp.where("user_id = ?", f)
+			@app_tapp_count = @app_count.length
+
+			if !@friend
+				@is_followed = 0
+			else
+				@is_followed = 1
+			end
+
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :description => @user_details.description,  :is_verified => @user_details.is_verified, :followers => @followers_count, :apps => @app_tapp_count, :is_followed => @is_followed}
+			@data << @dataset
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
 	private
 
 	def user_params

@@ -299,11 +299,17 @@ class API::V1::UsersController < ApplicationController
 
 		@user_apps.each do | f |
 			@app = App.where("id = ?", f.app_id).first
-
 			@app_count = UserApp.where("app_id = ?", f.app_id)
 			@app_tapp_count = @app_count.length
+			@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
 
-			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => @app_tapp_count}
+			if !@user_app
+				@tapped_by_user = 0
+			else
+				@tapped_by_user = 1
+			end
+
+			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
 			@data << @dataset
 		end
 
@@ -448,7 +454,15 @@ class API::V1::UsersController < ApplicationController
 
 		@popular.each do | f |
 			@app = App.find(f.app_id)
-			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => f.cnt}
+			@user_app = UserApp.where("app_id = ? AND user_id = ?", @app.id, params[:twitter_id]).first
+
+			if !@user_app
+				@is_tapped = 0
+			else
+				@is_tapped = 1
+			end
+
+			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => f.cnt, :tapped_by_user => @is_tapped}
 			@data << @dataset
 		end
 
@@ -475,7 +489,15 @@ class API::V1::UsersController < ApplicationController
 
 		@popular.each do | f |
 			@app = App.find(f.app_id)
-			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => f.cnt}
+			@user_app = UserApp.where("app_id = ? AND user_id = ?", @app.id, params[:twitter_id]).first
+
+			if !@user_app
+				@is_tapped = 0
+			else
+				@is_tapped = 1
+			end
+
+			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => f.cnt, :tapped_by_user => @is_tapped}
 			@data << @dataset
 		end
 

@@ -168,7 +168,7 @@ class API::V1::UsersController < ApplicationController
 			@followers = Friend.where(user_id: f.user_id)
 			@followers_count = @followers.length
 
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user.profile_image_url, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
 			@data << @dataset
 		end
 
@@ -200,7 +200,7 @@ class API::V1::UsersController < ApplicationController
 			@followers = Friend.where(user_id: f.friend_id)
 			@followers_count = @followers.length
 
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user_details.profile_image_url, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user_details.profile_image_url, :is_verified => @user_details.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
 			@data << @dataset
 		end
 
@@ -229,7 +229,7 @@ class API::V1::UsersController < ApplicationController
 			@app_details = App.find(f.app_id)
 			@app_count = UserApp.where("app_id = ?", @app_details.id)
 			@app_tapp_count = @app_count.length
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :app_id => @app_details.id, :app_name => @app_details.name, :app_icon => @app_details.icon_url, :app_link => @app_details.link, :app_category => @app_details.category, :app_description => @app_details.description, :app_tapp_count => @app_tapp_count}
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :is_verified => @user.is_verified, :app_id => @app_details.id, :app_name => @app_details.name, :app_icon => @app_details.icon_url, :app_link => @app_details.link, :app_category => @app_details.category, :app_description => @app_details.description, :app_tapp_count => @app_tapp_count}
 			@data << @dataset
 		end
 
@@ -326,7 +326,7 @@ class API::V1::UsersController < ApplicationController
 		@data = []
 		@dataset = {}
 
-		@dataset = {:twitter_id => @user.twitter_id, :name => @user.name, :screen_name => @user.screen_name, :profile_image_url => @user.profile_image_url, :description => @user.description,  :is_verified => @user.is_verified, :followings => @followings_count, :followers => @followers_count}
+		@dataset = {:twitter_id => @user.twitter_id, :name => @user.name, :screen_name => @user.screen_name, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :description => @user.description,  :is_verified => @user.is_verified, :followings => @followings_count, :followers => @followers_count}
 			
 		@data << @dataset
 
@@ -509,11 +509,6 @@ class API::V1::UsersController < ApplicationController
 		@dataset = {}
 
 		@twitter_friends.each do | f |
-
-			puts "xxxxx"
-			puts f
-
-
 			@user_details = User.where("twitter_id = ?", f).first
 			@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], f)
 			# get followers

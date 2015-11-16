@@ -1,6 +1,7 @@
 class API::V1::UsersController < ApplicationController
 
 	require 'google_play_search'
+	require 'market_bot'
 
 	def test
 		@test = "OK"
@@ -160,13 +161,27 @@ class API::V1::UsersController < ApplicationController
 			@user_details = User.where("twitter_id = ?", f.user_id).first
 			# get tapped apps
 			@user_apps_id = UserApp.where("user_id = ?", f.user_id)
-			@user_apps_count = @user_apps_id.length
+			if !@user_apps_id
+				@user_apps_count = @user_apps_id.length
+			else
+				@user_apps_count = 0
+			end
+			
 			# get friends
 			@friends = Friend.where(friend_id: f.user_id)
-			@friends_count = @friends.length
+			if !@friends
+				@friends_count = @friends.length
+			else
+				@friends_count = 0
+			end
+			
 			# get followers
 			@followers = Friend.where(user_id: f.user_id)
-			@followers_count = @followers.length
+			if !@followers
+				@followers_count = @followers.length
+			else
+				@followers_count = 0
+			end
 
 			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
 			@data << @dataset

@@ -183,7 +183,7 @@ class API::V1::UsersController < ApplicationController
 				@followers_count = 0
 			end
 
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user_details.profile_image_url, :is_verified => @user.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
 			@data << @dataset
 		end
 
@@ -191,7 +191,7 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { head :no_content, status: :no_content }
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
 	      end
 	    end
 	end
@@ -223,7 +223,7 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { head :no_content, status: :no_content }
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
 	      end
 	    end
 	end

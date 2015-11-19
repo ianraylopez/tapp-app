@@ -177,6 +177,8 @@ class API::V1::UsersController < ApplicationController
 			
 			# get followers
 			@followers = Friend.where(user_id: f.user_id)
+			puts "xxxx"
+			puts @followers
 			if !@followers
 				@followers_count = @followers.length
 			else
@@ -396,7 +398,7 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @errors, status: :unprocessable_entity }
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
 	      end
 	    end
 	end

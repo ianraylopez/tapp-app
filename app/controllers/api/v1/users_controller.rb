@@ -367,6 +367,7 @@ class API::V1::UsersController < ApplicationController
 
 		@data = []
 		@dataset = {}
+		@errors = []
 
 		@leaderboard.each do | f |
 			@user_details = User.where("twitter_id = ?", f.user_id).first
@@ -390,7 +391,7 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	        format.json { render json: @errors, status: :unprocessable_entity }
 	      end
 	    end
 	end

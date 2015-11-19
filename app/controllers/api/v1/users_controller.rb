@@ -169,7 +169,7 @@ class API::V1::UsersController < ApplicationController
 			
 			# get friends
 			@friends = Friend.where(friend_id: f.user_id)
-			if !@friends
+			if @friends != nil
 				@friends_count = @friends.length
 			else
 				@friends_count = 0
@@ -177,9 +177,7 @@ class API::V1::UsersController < ApplicationController
 			
 			# get followers
 			@followers = Friend.where(user_id: f.user_id)
-			puts "xxxx"
-			puts @followers
-			if !@followers
+			if @followers != nil
 				@followers_count = @followers.length
 			else
 				@followers_count = 0

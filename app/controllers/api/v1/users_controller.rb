@@ -381,7 +381,7 @@ class API::V1::UsersController < ApplicationController
 			@followers = Friend.where(user_id: f.user_id)
 			@followers_count = @followers.length
 
-			if !@friend
+			if @friend == nil
 				@is_followed = 0
 			else
 				@is_followed = 1
@@ -417,7 +417,7 @@ class API::V1::UsersController < ApplicationController
 			@app_count = UserApp.where("user_id = ?", f.twitter_id)
 			@app_tapp_count = @app_count.length
 
-			if !@friend
+			if @friend == nil
 				@is_followed = 0
 			else
 				@is_followed = 1
@@ -447,7 +447,7 @@ class API::V1::UsersController < ApplicationController
 			@app_tapp_count = @app_count.length
 			@user_app = UserApp.where("app_id = ? AND user_id = ?", f.id, params[:twitter_id]).first
 
-			if !@user_app
+			if @user_app == nil
 				@is_tapped = 0
 			else
 				@is_tapped = 1
@@ -477,7 +477,7 @@ class API::V1::UsersController < ApplicationController
 			@app = App.find(f.app_id)
 			@user_app = UserApp.where("app_id = ? AND user_id = ?", @app.id, params[:twitter_id]).first
 
-			if !@user_app
+			if @user_app == nil
 				@is_tapped = 0
 			else
 				@is_tapped = 1
@@ -512,7 +512,7 @@ class API::V1::UsersController < ApplicationController
 			@app = App.find(f.app_id)
 			@user_app = UserApp.where("app_id = ? AND user_id = ?", @app.id, params[:twitter_id]).first
 
-			if !@user_app
+			if @user_app == nil
 				@is_tapped = 0
 			else
 				@is_tapped = 1
@@ -561,7 +561,7 @@ class API::V1::UsersController < ApplicationController
 			@app_count = UserApp.where("user_id = ?", f)
 			@app_tapp_count = @app_count.length
 
-			if !@friend
+			if @friend == nil
 				@is_followed = 0
 			else
 				@is_followed = 1

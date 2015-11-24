@@ -553,30 +553,32 @@ class API::V1::UsersController < ApplicationController
 
 		@twitter_friends.each do | f |
 			@user_details = User.where("twitter_id = ?", f).first
-			@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], f)
-			# get followers
-			@followers = Friend.where(user_id: f)
-			if @followers == nil
-				@followers_count = 0
-			else
-				@followers_count = @followers.length
-			end
-			
-			# get apps
-			@app_count = UserApp.where("user_id = ?", f)
-			if @app_count == nil
-				@app_tapp_count = 0
-			else
-				@app_tapp_count = @app_count.length
-			end	
+			if @user_details != nil
+				@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], f)
+				# get followers
+				@followers = Friend.where(user_id: f)
+				if @followers == nil
+					@followers_count = 0
+				else
+					@followers_count = @followers.length
+				end
+				
+				# get apps
+				@app_count = UserApp.where("user_id = ?", f)
+				if @app_count == nil
+					@app_tapp_count = 0
+				else
+					@app_tapp_count = @app_count.length
+				end	
 
-			if @friend == nil
-				@is_followed = 0
-			else
-				@is_followed = 1
-			end
+				if @friend == nil
+					@is_followed = 0
+				else
+					@is_followed = 1
+				end
 
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :description => @user_details.description,  :is_verified => @user_details.is_verified, :followers => @followers_count, :apps => @app_tapp_count, :is_followed => @is_followed}
+				@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :description => @user_details.description,  :is_verified => @user_details.is_verified, :followers => @followers_count, :apps => @app_tapp_count, :is_followed => @is_followed}
+			end
 			@data << @dataset
 		end
 

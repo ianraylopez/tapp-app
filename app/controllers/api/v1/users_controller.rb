@@ -577,13 +577,7 @@ class API::V1::UsersController < ApplicationController
 					@is_followed = 1
 				end
 
-				if !@friend || @friend != nil
-					@test = 1
-				else
-					@test = 0
-				end
-
-				@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :description => @user_details.description,  :is_verified => @user_details.is_verified, :followers => @followers_count, :apps => @app_tapp_count, :is_followed => @is_followed, :test => @test}
+				@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :description => @user_details.description,  :is_verified => @user_details.is_verified, :followers => @followers_count, :apps => @app_tapp_count, :is_followed => @is_followed}
 				@data << @dataset
 			end
 			

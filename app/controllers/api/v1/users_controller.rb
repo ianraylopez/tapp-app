@@ -571,7 +571,7 @@ class API::V1::UsersController < ApplicationController
 					@app_tapp_count = @app_count.length
 				end	
 
-				if @friend == nil
+				if @friend.blank?
 					@is_followed = 0
 				else
 					@is_followed = 1

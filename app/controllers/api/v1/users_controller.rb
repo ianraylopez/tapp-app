@@ -556,10 +556,19 @@ class API::V1::UsersController < ApplicationController
 			@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], f)
 			# get followers
 			@followers = Friend.where(user_id: f)
-			@followers_count = @followers.length
+			if @followers == nil
+				@followers_count = 0
+			else
+				@followers_count = @followers.length
+			end
+			
 			# get apps
 			@app_count = UserApp.where("user_id = ?", f)
-			@app_tapp_count = @app_count.length
+			if @app_count == nil
+				@app_tapp_count = 0
+			else
+				@app_tapp_count = @app_count.length
+			end	
 
 			if @friend == nil
 				@is_followed = 0

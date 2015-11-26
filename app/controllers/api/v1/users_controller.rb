@@ -372,7 +372,6 @@ class API::V1::UsersController < ApplicationController
 
 			puts "xxxxx"
 			puts f.user_id
-			puts f.app_id
 
 			@user_details = User.where("twitter_id = ?", f.user_id).first
 			@friend = Friend.where("friend_id = ? AND user_id = ?", @user.twitter_id, f.user_id)

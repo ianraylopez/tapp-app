@@ -481,7 +481,7 @@ class API::V1::UsersController < ApplicationController
 				@is_tapped = 1
 			end
 
-			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => f.cnt, :tapped_by_user => @is_tapped}
+			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :package_name => @app.package_name, :tapp_count => f.cnt, :tapped_by_user => @is_tapped}
 			@data << @dataset
 		end
 
@@ -489,7 +489,7 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
 	end
@@ -516,7 +516,7 @@ class API::V1::UsersController < ApplicationController
 				@is_tapped = 1
 			end
 
-			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => f.cnt, :tapped_by_user => @is_tapped}
+			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :package_name => @app.package_name, :tapp_count => f.cnt, :tapped_by_user => @is_tapped}
 			@data << @dataset
 		end
 
@@ -524,7 +524,7 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
 	end

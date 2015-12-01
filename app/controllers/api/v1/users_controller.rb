@@ -271,7 +271,7 @@ class API::V1::UsersController < ApplicationController
 		@app_tapp_count = @app_count.length
 		@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
 
-		if !@user_app
+		if @user_app.blank?
 			@tapped_by_user = 0
 		else
 			@tapped_by_user = 1
@@ -287,7 +287,7 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
 	end
@@ -399,7 +399,7 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
-	def app_details
+	def friend_details
 		@user = User.where("twitter_id = ?", params[:friend_id]).first
 		@followings = Friend.where("friend_id = ?", params[:friend_id])
 		@followers = Friend.where("user_id = ?", params[:friend_id])
@@ -425,7 +425,7 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
 	end

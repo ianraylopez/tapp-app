@@ -318,7 +318,7 @@ class API::V1::UsersController < ApplicationController
 			@app_tapp_count = @app_count.length
 			@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
 
-			if !@user_app
+			if @user_app.blank?
 				@tapped_by_user = 0
 			else
 				@tapped_by_user = 1

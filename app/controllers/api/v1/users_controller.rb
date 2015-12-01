@@ -148,8 +148,8 @@ class API::V1::UsersController < ApplicationController
 	end
 
 	def list_following
-		@user = User.where("twitter_id = ?", params[:twitter_id]).first
-		@followings = Friend.where("friend_id = ?", params[:twitter_id])
+		@user = User.where("twitter_id = ?", params[:friend_id]).first
+		@followings = Friend.where("friend_id = ?", params[:friend_id])
 
 		puts @followings.length 
 
@@ -183,7 +183,15 @@ class API::V1::UsersController < ApplicationController
 				@followers_count = 0
 			end
 
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user_details.profile_image_url, :is_verified => @user.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
+			@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], params[:friend_id])
+
+			if @friend.blank?
+				@is_followed = 0
+			else
+				@is_followed = 1
+			end
+
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user_details.profile_image_url, :is_verified => @user.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count, :is_followed => @is_followed}
 			@data << @dataset
 		end
 
@@ -191,13 +199,13 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
 	end
 
 	def list_followers
-		@followers = Friend.where("user_id = ?", params[:twitter_id])
+		@followers = Friend.where("user_id = ?", params[:friend_id])
 
 		@data = []
 		@dataset = {}
@@ -215,7 +223,15 @@ class API::V1::UsersController < ApplicationController
 			@followers = Friend.where(user_id: f.friend_id)
 			@followers_count = @followers.length
 
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user_details.profile_image_url, :is_verified => @user_details.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
+			@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], params[:friend_id])
+
+			if @friend.blank?
+				@is_followed = 0
+			else
+				@is_followed = 1
+			end
+
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user_details.profile_image_url, :is_verified => @user_details.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count, :is_followed => @is_followed}
 			@data << @dataset
 		end
 
@@ -223,7 +239,7 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
 	end
@@ -301,13 +317,44 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
 	end
 
 	def user_apps
 		@user_apps = UserApp.where("user_id = ?", params[:twitter_id]).order(created_at: :desc)
+
+		@data = []
+		@dataset = {}
+
+		@user_apps.each do | f |
+			@app = App.where("id = ?", f.app_id).first
+			@app_count = UserApp.where("app_id = ?", f.app_id)
+			@app_tapp_count = @app_count.length
+			@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
+
+			if @user_app.blank?
+				@tapped_by_user = 0
+			else
+				@tapped_by_user = 1
+			end
+
+			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
+			@data << @dataset
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def friend_apps
+		@user_apps = UserApp.where("user_id = ?", params[:friend_id]).order(created_at: :desc)
 
 		@data = []
 		@dataset = {}

@@ -148,8 +148,8 @@ class API::V1::UsersController < ApplicationController
 	end
 
 	def list_following
-		@user = User.where("twitter_id = ?", params[:friend_id]).first
-		@followings = Friend.where("friend_id = ?", params[:friend_id])
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+		@followings = Friend.where("friend_id = ?", params[:twitter_id])
 
 		puts @followings.length 
 

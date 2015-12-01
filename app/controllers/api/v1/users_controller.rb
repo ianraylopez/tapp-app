@@ -360,6 +360,37 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
+	def app_details
+		@user = User.where("twitter_id = ?", params[:friend_id]).first
+		@followings = Friend.where("friend_id = ?", params[:friend_id])
+		@followers = Friend.where("user_id = ?", params[:friend_id])
+		@followings_count = @followings.length
+		@followers_count = @followers.length
+
+		@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], params[:friend_id])
+
+		if @friend.blank?
+			@is_followed = 0
+		else
+			@is_followed = 1
+		end
+
+		@data = []
+		@dataset = {}
+
+		@dataset = {:twitter_id => @user.twitter_id, :name => @user.name, :screen_name => @user.screen_name, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :description => @user.description,  :is_verified => @user.is_verified, :followings => @followings_count, :followers => @followers_count, :is_followed => @is_followed}
+			
+		@data << @dataset
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
 	def leaderboard
 		# Leaderboard only shows users which are ranking the highest on Tapp (most tapped apps).
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first

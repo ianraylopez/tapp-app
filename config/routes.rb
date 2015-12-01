@@ -14,9 +14,11 @@ Rails.application.routes.draw do
           post :list_followers
           post :feed
           post :app_details
+          post :friend_details
           post :app_users
           post :user_details
           post :user_apps
+          post :friend_apps
           post :leaderboard
           post :search_user
           post :search_app

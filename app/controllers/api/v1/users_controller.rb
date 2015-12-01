@@ -183,15 +183,7 @@ class API::V1::UsersController < ApplicationController
 				@followers_count = 0
 			end
 
-			@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], params[:friend_id])
-
-			if @friend.blank?
-				@is_followed = 0
-			else
-				@is_followed = 1
-			end
-
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user_details.profile_image_url, :is_verified => @user.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count, :is_followed => @is_followed}
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :description => @user_details.description, :profile_image_url => @user_details.profile_image_url, :is_verified => @user.is_verified, :count_apps => @user_apps_count, :count_friends => @friends_count, :count_followers => @followers_count}
 			@data << @dataset
 		end
 
@@ -205,7 +197,7 @@ class API::V1::UsersController < ApplicationController
 	end
 
 	def list_followers
-		@followers = Friend.where("user_id = ?", params[:friend_id])
+		@followers = Friend.where("user_id = ?", params[:twitter_id])
 
 		@data = []
 		@dataset = {}
@@ -223,7 +215,7 @@ class API::V1::UsersController < ApplicationController
 			@followers = Friend.where(user_id: f.friend_id)
 			@followers_count = @followers.length
 
-			@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], params[:friend_id])
+			@friend = Friend.where("friend_id = ? AND user_id = ?", params[:twitter_id], f.friend_id)
 
 			if @friend.blank?
 				@is_followed = 0

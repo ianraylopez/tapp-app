@@ -252,7 +252,7 @@ class API::V1::UsersController < ApplicationController
 			@app_details = App.find(f.app_id)
 			@app_count = UserApp.where("app_id = ?", @app_details.id)
 			@app_tapp_count = @app_count.length
-			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :is_verified => @user.is_verified, :app_id => @app_details.id, :app_name => @app_details.name, :app_icon => @app_details.icon_url, :app_link => @app_details.link, :app_category => @app_details.category, :app_description => @app_details.description, :app_tapp_count => @app_tapp_count}
+			@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :is_verified => @user.is_verified, :package_name => @app_details.package_name, :app_id => @app_details.id, :app_name => @app_details.name, :app_icon => @app_details.icon_url, :app_link => @app_details.link, :app_category => @app_details.category, :app_description => @app_details.description, :app_tapp_count => @app_tapp_count}
 			@data << @dataset
 		end
 
@@ -414,10 +414,18 @@ class API::V1::UsersController < ApplicationController
 			@is_followed = 1
 		end
 
+		@user_app = UserApp.where("user_id = ?", params[:friend_id], @app.id)
+
+		if @user_app.blank?
+			@tapped_app_count = 0
+		else
+			@tapped_app_count = @user_app.length
+		end
+
 		@data = []
 		@dataset = {}
 
-		@dataset = {:twitter_id => @user.twitter_id, :name => @user.name, :screen_name => @user.screen_name, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :description => @user.description,  :is_verified => @user.is_verified, :followings => @followings_count, :followers => @followers_count, :is_followed => @is_followed}
+		@dataset = {:twitter_id => @user.twitter_id, :name => @user.name, :screen_name => @user.screen_name, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :description => @user.description,  :is_verified => @user.is_verified, :followings => @followings_count, :followers => @followers_count, :is_followed => @is_followed, :tapped_app_count => @tapped_app_count}
 			
 		@data << @dataset
 

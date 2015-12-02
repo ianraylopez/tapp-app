@@ -383,10 +383,18 @@ class API::V1::UsersController < ApplicationController
 		@followings_count = @followings.length
 		@followers_count = @followers.length
 
+		@user_app = UserApp.where("user_id = ?", params[:twitter_id])
+
+		if @user_app.blank?
+			@tapped_app_count = 0
+		else
+			@tapped_app_count = @user_app.length
+		end
+
 		@data = []
 		@dataset = {}
 
-		@dataset = {:twitter_id => @user.twitter_id, :name => @user.name, :screen_name => @user.screen_name, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :description => @user.description,  :is_verified => @user.is_verified, :followings => @followings_count, :followers => @followers_count}
+		@dataset = {:twitter_id => @user.twitter_id, :name => @user.name, :screen_name => @user.screen_name, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :description => @user.description,  :is_verified => @user.is_verified, :followings => @followings_count, :followers => @followers_count, :tapped_app_count => @tapped_app_count}
 			
 		@data << @dataset
 

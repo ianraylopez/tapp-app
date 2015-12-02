@@ -414,7 +414,7 @@ class API::V1::UsersController < ApplicationController
 			@is_followed = 1
 		end
 
-		@user_app = UserApp.where("user_id = ?", params[:friend_id], @app.id)
+		@user_app = UserApp.where("user_id = ?", params[:friend_id])
 
 		if @user_app.blank?
 			@tapped_app_count = 0

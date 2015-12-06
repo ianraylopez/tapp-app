@@ -486,7 +486,7 @@ class API::V1::UsersController < ApplicationController
 	end
 
 	def search_user
-		@result = User.where("name LIKE ? OR screen_name like ?", "%#{params[:q]}%", "%#{params[:q]}%").limit(100)
+		@result = User.where("name LIKE ? OR screen_name like ?", "%#{params[:q]}%", "%#{params[:q]}%").limit(20)
 
 		@data = []
 		@dataset = {}
@@ -501,7 +501,7 @@ class API::V1::UsersController < ApplicationController
 			@app_count = UserApp.where("user_id = ?", f.twitter_id)
 			@app_tapp_count = @app_count.length
 
-			if @friend == nil
+			if @friend.blank?
 				@is_followed = 0
 			else
 				@is_followed = 1
@@ -515,13 +515,13 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
 	end
 
 	def search_app
-		@result = App.where("name LIKE ? OR package_name like ?", "%#{params[:q]}%", "%#{params[:q]}%").limit(100)
+		@result = App.where("name LIKE ? OR package_name like ?", "%#{params[:q]}%", "%#{params[:q]}%").limit(20)
 
 		@data = []
 		@dataset = {}
@@ -531,7 +531,7 @@ class API::V1::UsersController < ApplicationController
 			@app_tapp_count = @app_count.length
 			@user_app = UserApp.where("app_id = ? AND user_id = ?", f.id, params[:twitter_id]).first
 
-			if @user_app == nil
+			if @user_app.blank?
 				@is_tapped = 0
 			else
 				@is_tapped = 1
@@ -545,14 +545,14 @@ class API::V1::UsersController < ApplicationController
 	      if @data.length > 0
 	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: @data.errors, status: :unprocessable_entity }
+	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
 	end
 
 	def popular_apps_overall
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first
-		@popular = UserApp.select('app_id, count(user_id) cnt').group("app_id").order("cnt desc").limit(100)
+		@popular = UserApp.select('app_id, count(user_id) cnt').group("app_id").order("cnt desc").limit(30)
 
 		@data = []
 		@dataset = {}
@@ -587,7 +587,7 @@ class API::V1::UsersController < ApplicationController
 		@friends = []
 		@followers.each { |f| @friends << f.friend_id} 
 
-		@popular = UserApp.select('app_id, count(user_id) cnt').where(user_id: @friends).group("app_id").order("cnt desc").limit(100)
+		@popular = UserApp.select('app_id, count(user_id) cnt').where(user_id: @friends).group("app_id").order("cnt desc").limit(30)
 
 		@data = []
 		@dataset = {}

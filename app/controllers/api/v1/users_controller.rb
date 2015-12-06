@@ -332,7 +332,7 @@ class API::V1::UsersController < ApplicationController
 				@tapped_by_user = 1
 			end
 
-			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
+			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :package_name => @app.package_name, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
 			@data << @dataset
 		end
 

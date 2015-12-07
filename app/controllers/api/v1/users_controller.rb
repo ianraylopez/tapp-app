@@ -106,22 +106,17 @@ class API::V1::UsersController < ApplicationController
 			gps = GooglePlaySearch::Search.new(:category=>"apps")
 			app_list = gps.search(params[:app])
 
-			puts "xxxxx"
-
-			app = app_list.first
-
-			puts "yyyyy"
-
 			@new_app = App.new()
 			@new_app.name = params[:app]
 			@new_app.package_name = params[:package]
 
-			if app.blank?
+			if app_list.blank?
 				@new_app.icon_url = ""
 				@new_app.link = ""
 				@new_app.category = ""
 				@new_app.description = ""
 			else
+				app = app_list.first
 				@new_app.icon_url = app.logo_url
 				@new_app.link = app.url
 				@new_app.category = app.category

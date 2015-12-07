@@ -106,14 +106,24 @@ class API::V1::UsersController < ApplicationController
 			gps = GooglePlaySearch::Search.new(:category=>"apps")
 			app_list = gps.search(params[:app])
 			app = app_list.first
-			# insert app
+
 			@new_app = App.new()
 			@new_app.name = params[:app]
 			@new_app.package_name = params[:package]
-			@new_app.icon_url = app.logo_url
-			@new_app.link = app.url
-			@new_app.category = app.category
-			@new_app.description = app.short_description
+
+			if app.blank?
+				@new_app.icon_url = ""
+				@new_app.link = ""
+				@new_app.category = ""
+				@new_app.description = ""
+			else
+				@new_app.icon_url = app.logo_url
+				@new_app.link = app.url
+				@new_app.category = app.category
+				@new_app.description = app.short_description
+			end	
+
+			# insert app
 			@new_app.save
 			@app_id = @new_app.id
 		else
@@ -279,6 +289,22 @@ class API::V1::UsersController < ApplicationController
 
 		@data = []
 		@dataset = {}
+
+		if @app.icon_url == nil
+			@app.icon_url = ""
+		end
+
+		if @app.link == nil
+			@app.link = ""
+		end
+
+		if @app.category == nil
+			@app.category = ""
+		end
+
+		if @app.description == nil
+			@app.description = ""
+		end
 
 		@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :package_name => @app.package_name, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
 		@data << @dataset

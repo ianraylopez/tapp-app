@@ -101,7 +101,7 @@ class API::V1::UsersController < ApplicationController
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first
 		@app = App.where("package_name = ?", params[:package]).first
 
-		if @app.blank?
+		if @app.blank? || @app == nil
 			# get app info from Play Store
 			gps = GooglePlaySearch::Search.new(:category=>"apps")
 			app_list = gps.search(params[:app])

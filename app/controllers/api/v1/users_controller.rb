@@ -105,7 +105,12 @@ class API::V1::UsersController < ApplicationController
 			# get app info from Play Store
 			gps = GooglePlaySearch::Search.new(:category=>"apps")
 			app_list = gps.search(params[:app])
+
+			puts "xxxxx"
+
 			app = app_list.first
+
+			puts "yyyyy"
 
 			@new_app = App.new()
 			@new_app.name = params[:app]
@@ -138,7 +143,7 @@ class API::V1::UsersController < ApplicationController
 	      if @user_app.save
 	        format.json { render json: "OK", status: :ok }
 	      else
-	        format.json { render json: @user_app.errors, status: :unprocessable_entity }
+	        format.json { render json: "NOT OK", status: :unprocessable_entity }
 	      end
 	    end
 	end

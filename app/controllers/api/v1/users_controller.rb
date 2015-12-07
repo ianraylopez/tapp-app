@@ -101,6 +101,8 @@ class API::V1::UsersController < ApplicationController
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first
 		@app = App.where("package_name = ?", params[:package]).first
 
+		@data = []
+
 		if @app.blank? || @app == nil
 			# get app info from Play Store
 			gps = GooglePlaySearch::Search.new(:category=>"apps")
@@ -136,9 +138,9 @@ class API::V1::UsersController < ApplicationController
 		
 		respond_to do |format|
 	      if @user_app.save
-	        format.json { render json: "OK", status: :ok }
+	        format.json { render json: @data, status: :ok }
 	      else
-	        format.json { render json: "NOT OK", status: :unprocessable_entity }
+	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
 	end

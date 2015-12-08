@@ -102,35 +102,48 @@ class API::V1::UsersController < ApplicationController
 		@app = App.where("package_name = ?", params[:package]).first
 
 		@data = []
+		@dataset = {}
 
 		if @app.blank?
-			# get app info from Play Store
-			gps = GooglePlaySearch::Search.new(:category=>"apps")
-			app_list = gps.search(params[:app])
+			begin
+				# get app info from Play Store
+				gps = GooglePlaySearch::Search.new(:category=>"apps")
+				app_list = gps.search(params[:app])
 
-			@new_app = App.new()
-			@new_app.name = params[:app]
-			@new_app.package_name = params[:package]
+				@new_app = App.new()
+				@new_app.name = params[:app]
+				@new_app.package_name = params[:package]
 
-			if app_list.blank?
-				@new_app.icon_url = ""
-				@new_app.link = ""
-				@new_app.category = ""
-				@new_app.description = ""
-			else
-				app = app_list.first
-				@new_app.icon_url = app.logo_url
-				@new_app.link = app.url
-				@new_app.category = app.category
-				@new_app.description = app.short_description
-			end	
+				if app_list.blank?
+					@new_app.icon_url = ""
+					@new_app.link = ""
+					@new_app.category = ""
+					@new_app.description = ""
+				else
+					app = app_list.first
+					@new_app.icon_url = app.logo_url
+					@new_app.link = app.url
+					@new_app.category = app.category
+					@new_app.description = app.short_description
+				end	
 
-			# insert app
-			@new_app.save
-			@app_id = @new_app.id
+				# insert app
+				@new_app.save
+				@app_id = @new_app.id
+			rescue
+				@new_app = App.new()
+				@new_app.name = params[:app]
+				@new_app.package_name = params[:package]
+				# insert app
+				@new_app.save
+				@app_id = @new_app.id
+			end
+				
 		else
 			@app_id = @app.id
 		end
+
+		@data << @dataset
 
 		@user_app = UserApp.new()
 		@user_app.user_id = @user.twitter_id

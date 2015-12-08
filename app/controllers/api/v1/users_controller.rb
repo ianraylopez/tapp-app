@@ -103,14 +103,14 @@ class API::V1::UsersController < ApplicationController
 
 		@data = []
 
+		@new_app = App.new()
+		@new_app.name = params[:app]
+		@new_app.package_name = params[:package]
+
 		if @app.blank? || @app == nil
 			# get app info from Play Store
 			gps = GooglePlaySearch::Search.new(:category=>"apps")
 			app_list = gps.search(params[:app])
-
-			@new_app = App.new()
-			@new_app.name = params[:app]
-			@new_app.package_name = params[:package]
 
 			if app_list.blank?
 				@new_app.icon_url = ""

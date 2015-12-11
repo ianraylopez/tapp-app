@@ -26,6 +26,7 @@ Rails.application.routes.draw do
           post :popular_apps_followers
           post :delete_all_friends
           post :find_friends
+          post :find_apps
         end
       end
     end

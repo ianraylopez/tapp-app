@@ -717,6 +717,53 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
+	def find_apps
+		@apps_to_find = params[:apps].split(",")
+
+		@data = []
+		@dataset = {}
+
+		@apps_to_find.each do | f |
+			@app_details = App.where("package_name = ?", f).first
+			if @app_details != nil
+				@app_count = UserApp.where("app_id = ?", @app_details.id)
+				
+				if @app_count == nil
+					@app_tapp_count = 0
+				else
+					@app_tapp_count = @app_count.length
+				end
+
+				if @app_details.icon_url == nil
+					@app_details.icon_url = ""
+				end
+
+				if @app_details.link == nil
+					@app_details.link = ""
+				end
+
+				if @app_details.category == nil
+					@app_details.category = ""
+				end
+
+				if @app_details.description == nil
+					@app_details.description = ""
+				end
+
+				@dataset = {:app_id => @app_details.id, :app_name => @app_details.name, :app_icon => @app_details.icon_url, :app_link => @app_details.link, :app_category => @app_details.category, :app_description => @app_details.description, :package_name => @app_details.package_name, :tapp_count => @app_tapp_count}
+				@data << @dataset
+			end
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
 	private
 
 	def user_params

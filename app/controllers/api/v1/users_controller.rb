@@ -727,6 +727,13 @@ class API::V1::UsersController < ApplicationController
 			@app_details = App.where("package_name = ?", f).first
 			if @app_details != nil
 				@app_count = UserApp.where("app_id = ?", @app_details.id)
+				@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app_details.id)
+
+				if @user_app.blank?
+					@tapped_by_user = 0
+				else
+					@tapped_by_user = 1
+				end
 				
 				if @app_count == nil
 					@app_tapp_count = 0
@@ -750,7 +757,7 @@ class API::V1::UsersController < ApplicationController
 					@app_details.description = ""
 				end
 
-				@dataset = {:app_id => @app_details.id, :app_name => @app_details.name, :app_icon => @app_details.icon_url, :app_link => @app_details.link, :app_category => @app_details.category, :app_description => @app_details.description, :package_name => @app_details.package_name, :tapp_count => @app_tapp_count}
+				@dataset = {:app_id => @app_details.id, :app_name => @app_details.name, :app_icon => @app_details.icon_url, :app_link => @app_details.link, :app_category => @app_details.category, :app_description => @app_details.description, :package_name => @app_details.package_name, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
 				@data << @dataset
 			end
 		end

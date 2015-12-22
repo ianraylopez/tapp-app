@@ -97,7 +97,7 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
-	def add_user_app
+	def add_user_app2
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first
 		@app = App.where("package_name = ?", params[:package]).first
 
@@ -109,6 +109,8 @@ class API::V1::UsersController < ApplicationController
 				# get app info from Play Store
 				gps = GooglePlaySearch::Search.new(:category=>"apps")
 				app_list = gps.search(params[:app])
+				app = app_list.first
+				#app_list = gps.search(params[:app])
 
 				@new_app = App.new()
 				@new_app.name = params[:app]
@@ -156,6 +158,105 @@ class API::V1::UsersController < ApplicationController
 	        format.json { render json: @data, status: :unprocessable_entity }
 	      end
 	    end
+	end
+
+	def add_user_app
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+		@app = App.where("package_name = ?", params[:package]).first
+
+		@data = []
+		@dataset = {}
+
+		if @app.blank?
+			begin
+				if app_exists?(params[:package])
+					@thisApp = MarketBot::Android::App.new(params[:package])
+					@thisApp.update
+					
+					@new_app = App.new()
+					@new_app.name = params[:app]
+					@new_app.package_name = params[:package]	
+					#puts MarketBot::Android::App::MARKET_ATTRIBUTES.inspect
+
+=begin
+					puts "aaaa"
+					puts @thisApp.update.description
+					puts "bbbb"
+					puts @thisApp.update.banner_image_url
+					puts "cccc"
+					puts @thisApp.update.effective_url
+					puts MarketBot::Android::App::MARKET_ATTRIBUTES.inspect
+
+					puts "AAAAA"
+					puts @thisApp.banner_icon_url
+					puts "BBBBB"
+					puts @thisApp.category
+
+=end
+
+
+					if @thisApp.blank?
+						@new_app.icon_url = ""
+						@new_app.link = ""
+						@new_app.category = ""
+						@new_app.description = ""
+					else
+						gps = GooglePlaySearch::Search.new(:category=>"apps")
+						app_list = gps.search(params[:app])
+						app = app_list.first
+
+						str = @thisApp.banner_icon_url
+						first_4_chars = str[0..3]
+
+						if first_4_chars == 'http'
+							@new_app.icon_url = @thisApp.banner_icon_url
+						else
+							@new_app.icon_url = "https:" + @thisApp.banner_icon_url
+						end
+
+						@new_app.category = @thisApp.category
+						@new_app.link = "https://play.google.com/store/apps/details?id=" + params[:package]
+						@new_app.description = app.short_description
+					end	
+
+				# insert app
+				@new_app.save
+				@app_id = @new_app.id
+				end
+			rescue
+				@new_app = App.new()
+				@new_app.name = params[:app]
+				@new_app.package_name = params[:package]
+				# insert app
+				@new_app.save
+				@app_id = @new_app.id
+			end
+		else
+			@app_id = @app.id
+		end
+
+		@data << @dataset
+
+		@user_app = UserApp.new()
+		@user_app.user_id = @user.twitter_id
+		@user_app.app_id = @app_id
+		
+		respond_to do |format|
+	      if @user_app.save
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	# Check if an app exists in Google Play Store and has a title.
+	def app_exists?(app_id)
+  		begin
+    		return !!MarketBot::Android::App.new(app_id).update.title
+  		rescue
+    		return false
+  		end
 	end
 
 	def delete_user_app

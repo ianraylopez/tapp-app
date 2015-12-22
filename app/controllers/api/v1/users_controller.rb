@@ -286,8 +286,8 @@ class API::V1::UsersController < ApplicationController
 			# get user details here
 			@user_details = User.where("twitter_id = ?", f.user_id).first
 			# get tapped apps
-			@user_apps_id = UserApp.where("user_id = ?", f.user_id)
-			if !@user_apps_id
+			@user_apps_id = UserApp.where(user_id: f.user_id)
+			if @user_apps_id != nil
 				@user_apps_count = @user_apps_id.length
 			else
 				@user_apps_count = 0

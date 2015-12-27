@@ -77,11 +77,17 @@ class API::V1::UsersController < ApplicationController
 		@friend.friendship_dt = Time.now
 
 		respond_to do |format|
-	      if @friend.save
-	        format.json { render json: "OK", status: :ok }
-	      else
-	        format.json { render json: @friend.errors, status: :unprocessable_entity }
-	      end
+			friend_exist = Friend.where("user_id = ? AND friend_id = ?", params[:followed_id], params[:twitter_id])
+
+			if !friend_exist.blank?
+				format.json { render json: @data, status: :ok }
+			else
+		    	if @friend.save
+		        	format.json { render json: @data, status: :ok }
+		      	else
+		        	format.json { render json: @data, status: :unprocessable_entity }
+		      	end
+			end	
 	    end
 	end
 
@@ -178,23 +184,6 @@ class API::V1::UsersController < ApplicationController
 					@new_app.package_name = params[:package]	
 					#puts MarketBot::Android::App::MARKET_ATTRIBUTES.inspect
 
-=begin
-					puts "aaaa"
-					puts @thisApp.update.description
-					puts "bbbb"
-					puts @thisApp.update.banner_image_url
-					puts "cccc"
-					puts @thisApp.update.effective_url
-					puts MarketBot::Android::App::MARKET_ATTRIBUTES.inspect
-
-					puts "AAAAA"
-					puts @thisApp.banner_icon_url
-					puts "BBBBB"
-					puts @thisApp.category
-
-=end
-
-
 					if @thisApp.blank?
 						@new_app.icon_url = ""
 						@new_app.link = ""
@@ -242,11 +231,17 @@ class API::V1::UsersController < ApplicationController
 		@user_app.app_id = @app_id
 		
 		respond_to do |format|
-	      if @user_app.save
-	        format.json { render json: @data, status: :ok }
-	      else
-	        format.json { render json: @data, status: :unprocessable_entity }
-	      end
+			user_app_exists = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app_id)
+
+			if !user_app_exists.blank?
+				format.json { render json: @data, status: :ok }
+			else
+		    	if @user_app.save
+		        	format.json { render json: @data, status: :ok }
+		      	else
+		        	format.json { render json: @data, status: :unprocessable_entity }
+		      	end
+			end
 	    end
 	end
 

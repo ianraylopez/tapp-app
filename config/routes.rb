@@ -27,6 +27,7 @@ Rails.application.routes.draw do
           post :delete_all_friends
           post :find_friends
           post :find_apps
+          post :upload_background
           post :add_user_app2
         end
       end

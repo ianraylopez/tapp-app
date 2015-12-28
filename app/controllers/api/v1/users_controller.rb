@@ -2,6 +2,7 @@ class API::V1::UsersController < ApplicationController
 
 	require 'google_play_search'
 	require 'market_bot'
+	require 'fileutils'
 
 	def test
 		@test = "OK"
@@ -67,6 +68,38 @@ class API::V1::UsersController < ApplicationController
 		    end
    		end	
 	    
+	end
+
+	def upload_background
+		@user = User.where("twitter_id = ?", params[:twitter_id]).first
+
+	    begin
+			# source
+	    	source = params[:image].path
+	    	original_filename = params[:image].original_filename
+	    	extension = File.extname(original_filename)
+
+	    	# target
+	    	target_path = Rails.root.join('public','bg')
+	    	target_file = "#{params[:twitter_id]}#{extension}"
+	    	target = "#{target_path}/#{target_file}"
+
+	    	# move temp file to target
+	    	FileUtils.mv source, target, :force => true
+
+	    	@user.background = target_file
+	    rescue Exception => e
+	      	Rails.logger.error "#{e.message}"
+	    end
+
+	ensure
+		respond_to do |format|
+	      if @user.save
+	        format.json { render json: "OK", status: :ok }
+	      else
+	        format.json { render json: @user.errors, status: :unprocessable_entity }
+	      end
+	    end
 	end
 
 	def follow

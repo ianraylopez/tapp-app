@@ -667,7 +667,7 @@ class API::V1::UsersController < ApplicationController
 		@data = []
 		@dataset = {}
 
-		@dataset = {:twitter_id => @user.twitter_id, :name => @user.name, :screen_name => @user.screen_name, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :description => @user.description,  :is_verified => @user.is_verified, :followings => @followings_count, :followers => @followers_count, :is_followed => @is_followed, :tapped_app_count => @tapped_app_count}
+		@dataset = {:twitter_id => @user.twitter_id, :name => @user.name, :screen_name => @user.screen_name, :profile_image_url => @user.profile_image_url, :is_verified => @user.is_verified, :description => @user.description,  :is_verified => @user.is_verified, :followings => @followings_count, :followers => @followers_count, :is_followed => @is_followed, :tapped_app_count => @tapped_app_count, :background => @user.background}
 			
 		@data << @dataset
 

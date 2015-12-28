@@ -287,6 +287,70 @@ class API::V1::UsersController < ApplicationController
   		end
 	end
 
+	def add_app
+		@app = App.where("package_name = ?", params[:package]).first
+
+		result = "Success"
+
+		if @app.blank?
+			begin
+				if app_exists?(params[:package])
+					@thisApp = MarketBot::Android::App.new(params[:package])
+					@thisApp.update
+					
+					@new_app = App.new()
+					@new_app.name = params[:app]
+					@new_app.package_name = params[:package]	
+
+					if @thisApp.blank?
+						@new_app.icon_url = ""
+						@new_app.link = ""
+						@new_app.category = ""
+						@new_app.description = ""
+					else
+						gps = GooglePlaySearch::Search.new(:category=>"apps")
+						app_list = gps.search(params[:app])
+						app = app_list.first
+
+						str = @thisApp.banner_icon_url
+						first_4_chars = str[0..3]
+
+						if first_4_chars == 'http'
+							@new_app.icon_url = @thisApp.banner_icon_url
+						else
+							@new_app.icon_url = "https:" + @thisApp.banner_icon_url
+						end
+
+						@new_app.category = @thisApp.category
+						@new_app.link = "https://play.google.com/store/apps/details?id=" + params[:package]
+						@new_app.description = app.short_description
+					end	
+
+				# insert app
+				@new_app.save
+				@app_id = @new_app.id
+				end
+			rescue
+				@new_app = App.new()
+				@new_app.name = params[:app]
+				@new_app.package_name = params[:package]
+				# insert app
+				@new_app.save
+				@app_id = @new_app.id
+
+				result = "Failed!"
+			end
+		end
+		
+		respond_to do |format|
+			if result == "Success"
+	        	format.json { render json: result.to_json, status: :ok }
+	      	else
+	        	format.json { render json: result.to_json, status: :unprocessable_entity }
+	      	end
+	    end
+	end
+
 	def delete_user_app
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first
 		@app = App.where("package_name = ?", params[:package]).first

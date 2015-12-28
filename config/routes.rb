@@ -28,7 +28,7 @@ Rails.application.routes.draw do
           post :find_friends
           post :find_apps
           post :upload_background
-          post :add_user_app2
+          post :add_app
         end
       end
     end

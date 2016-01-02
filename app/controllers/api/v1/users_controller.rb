@@ -919,33 +919,37 @@ class API::V1::UsersController < ApplicationController
 
 			# add app
 			if @app_exist == nil
-				@thisApp = MarketBot::Android::App.new(f)
-				@thisApp.update
-				
-				@new_app = App.new()
-				@new_app.name = @thisApp.title
-				@new_app.package_name = f	
+				begin
+					@thisApp = MarketBot::Android::App.new(f)
+					@thisApp.update
+					
+					@new_app = App.new()
+					@new_app.name = @thisApp.title
+					@new_app.package_name = f	
 
-				if !@thisApp.blank?
-					gps = GooglePlaySearch::Search.new(:category=>"apps")
-					app_list = gps.search(@thisApp.title)
-					app = app_list.first
+					if !@thisApp.blank?
+						gps = GooglePlaySearch::Search.new(:category=>"apps")
+						app_list = gps.search(@thisApp.title)
+						app = app_list.first
 
-					str = @thisApp.banner_icon_url
-					first_4_chars = str[0..3]
+						str = @thisApp.banner_icon_url
+						first_4_chars = str[0..3]
 
-					if first_4_chars == 'http'
-						@new_app.icon_url = @thisApp.banner_icon_url
-					else
-						@new_app.icon_url = "https:" + @thisApp.banner_icon_url
-					end
+						if first_4_chars == 'http'
+							@new_app.icon_url = @thisApp.banner_icon_url
+						else
+							@new_app.icon_url = "https:" + @thisApp.banner_icon_url
+						end
 
-					@new_app.category = @thisApp.category
-					@new_app.link = "https://play.google.com/store/apps/details?id=" + f
-					@new_app.description = app.short_description
+						@new_app.category = @thisApp.category
+						@new_app.link = "https://play.google.com/store/apps/details?id=" + f
+						@new_app.description = app.short_description
 
-					@new_app.save
-				end	
+						@new_app.sav
+					end	
+				rescue
+					puts "error"
+				end
 			end
 
 			@app_details = App.where("package_name = ?", f).first

@@ -215,7 +215,7 @@ class API::V1::UsersController < ApplicationController
 					@new_app = App.new()
 					@new_app.name = params[:app]
 					@new_app.package_name = params[:package]	
-					#puts MarketBot::Android::App::MARKET_ATTRIBUTES.inspect
+					puts MarketBot::Android::App::MARKET_ATTRIBUTES.inspect
 
 					if @thisApp.blank?
 						@new_app.icon_url = ""
@@ -289,8 +289,6 @@ class API::V1::UsersController < ApplicationController
 
 	def add_app
 		@app = App.where("package_name = ?", params[:package]).first
-
-		result = "Success"
 
 		if @app.blank?
 			begin
@@ -911,6 +909,93 @@ class API::V1::UsersController < ApplicationController
 	end
 
 	def find_apps
+		@apps_to_find = params[:apps].split(",")
+
+		@data = []
+		@dataset = {}
+
+		@apps_to_find.each do | f |
+			@app_exist = App.where("package_name = ?", f).first
+
+			# add app
+			if @app_exist == nil
+				@thisApp = MarketBot::Android::App.new(f)
+				@thisApp.update
+				
+				@new_app = App.new()
+				@new_app.name = @thisApp.title
+				@new_app.package_name = f	
+
+				if !@thisApp.blank?
+					gps = GooglePlaySearch::Search.new(:category=>"apps")
+					app_list = gps.search(@thisApp.title)
+					app = app_list.first
+
+					str = @thisApp.banner_icon_url
+					first_4_chars = str[0..3]
+
+					if first_4_chars == 'http'
+						@new_app.icon_url = @thisApp.banner_icon_url
+					else
+						@new_app.icon_url = "https:" + @thisApp.banner_icon_url
+					end
+
+					@new_app.category = @thisApp.category
+					@new_app.link = "https://play.google.com/store/apps/details?id=" + f
+					@new_app.description = app.short_description
+
+					@new_app.save
+				end	
+			end
+
+			@app_details = App.where("package_name = ?", f).first
+			if @app_details != nil
+				@app_count = UserApp.where("app_id = ?", @app_details.id)
+				@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app_details.id)
+
+				if @user_app.blank?
+					@tapped_by_user = 0
+				else
+					@tapped_by_user = 1
+				end
+				
+				if @app_count == nil
+					@app_tapp_count = 0
+				else
+					@app_tapp_count = @app_count.length
+				end
+
+				if @app_details.icon_url == nil
+					@app_details.icon_url = ""
+				end
+
+				if @app_details.link == nil
+					@app_details.link = ""
+				end
+
+				if @app_details.category == nil
+					@app_details.category = ""
+				end
+
+				if @app_details.description == nil
+					@app_details.description = ""
+				end
+
+				@dataset = {:app_id => @app_details.id, :app_name => @app_details.name, :app_icon => @app_details.icon_url, :app_link => @app_details.link, :app_category => @app_details.category, :app_description => @app_details.description, :package_name => @app_details.package_name, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
+				@data << @dataset
+			end
+		end
+
+		respond_to do |format|
+	      if @data.length > 0
+	        format.json { render json: @data, status: :ok }
+	      else
+	        format.json { render json: @data, status: :unprocessable_entity }
+	      end
+	    end
+	end
+
+	def find_apps2
 		@apps_to_find = params[:apps].split(",")
 
 		@data = []

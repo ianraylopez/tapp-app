@@ -3,6 +3,7 @@ class API::V1::UsersController < ApplicationController
 	require 'google_play_search'
 	require 'market_bot'
 	require 'fileutils'
+	require 'aws'
 
 	def test
 		@test = "OK"
@@ -73,7 +74,11 @@ class API::V1::UsersController < ApplicationController
 	def upload_background
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first
 
+		bucket_name = 'tapp-that-app'
+
 	    begin
+	    	puts "111111111"
+
 			# source
 	    	source = params[:image].path
 	    	original_filename = params[:image].original_filename
@@ -87,8 +92,23 @@ class API::V1::UsersController < ApplicationController
 	    	# move temp file to target
 	    	FileUtils.mv source, target, :force => true
 
+	    	file_name = target
+			key = File.basename(file_name)
+
+	    	puts "aaaaaaaa"
+	    	
+	    	# Get an instance of the S3 interface.
+			s3 = AWS::S3.new(:access_key_id => 'AKIAIRFZJQDVIX4U6URQ',:secret_access_key => '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')
+			obj = s3.buckets[bucket_name].objects[key] # no request made
+
+			puts "22222222"
+			
+			s3.buckets[bucket_name].objects[key].write(:file => file_name)
+			puts "Uploading file #{file_name} to bucket #{bucket_name}."
+
 	    	@user.background = target_file
 	    rescue Exception => e
+	    	puts "xxxxxxxxx"
 	      	Rails.logger.error "#{e.message}"
 	    end
 

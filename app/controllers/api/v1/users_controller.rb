@@ -960,7 +960,7 @@ class API::V1::UsersController < ApplicationController
 						@new_app.link = "https://play.google.com/store/apps/details?id=" + f
 						@new_app.description = app.short_description
 
-						@new_app.sav
+						@new_app.save
 					end	
 				rescue
 					puts "error"

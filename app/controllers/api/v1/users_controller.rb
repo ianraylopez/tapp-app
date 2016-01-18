@@ -567,7 +567,7 @@ class API::V1::UsersController < ApplicationController
 		@data = []
 		@dataset = {}
 
-		if @user_apps.blank?
+		if @user_apps == nil
 			@data << @dataset
 		else
 			@user_apps.each do | f |
@@ -602,7 +602,7 @@ class API::V1::UsersController < ApplicationController
 		@data = []
 		@dataset = {}
 
-		if @user_apps.blank?
+		if @user_apps == nil
 			@data << @dataset
 		else
 			@user_apps.each do | f |

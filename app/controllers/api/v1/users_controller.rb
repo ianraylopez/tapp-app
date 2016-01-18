@@ -567,20 +567,24 @@ class API::V1::UsersController < ApplicationController
 		@data = []
 		@dataset = {}
 
-		@user_apps.each do | f |
-			@app = App.where("id = ?", f.app_id).first
-			@app_count = UserApp.where("app_id = ?", f.app_id)
-			@app_tapp_count = @app_count.length
-			@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
-
-			if @user_app.blank?
-				@tapped_by_user = 0
-			else
-				@tapped_by_user = 1
-			end
-
-			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :package_name => @app.package_name, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
+		if @user_apps.blank?
 			@data << @dataset
+		else
+			@user_apps.each do | f |
+				@app = App.where("id = ?", f.app_id).first
+				@app_count = UserApp.where("app_id = ?", f.app_id)
+				@app_tapp_count = @app_count.length
+				@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
+
+				if @user_app.blank?
+					@tapped_by_user = 0
+				else
+					@tapped_by_user = 1
+				end
+
+				@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :package_name => @app.package_name, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
+				@data << @dataset
+			end
 		end
 
 		respond_to do |format|
@@ -598,20 +602,24 @@ class API::V1::UsersController < ApplicationController
 		@data = []
 		@dataset = {}
 
-		@user_apps.each do | f |
-			@app = App.where("id = ?", f.app_id).first
-			@app_count = UserApp.where("app_id = ?", f.app_id)
-			@app_tapp_count = @app_count.length
-			@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
-
-			if @user_app.blank?
-				@tapped_by_user = 0
-			else
-				@tapped_by_user = 1
-			end
-
-			@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :app_package_name => @app.package_name, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
+		if @user_apps.blank?
 			@data << @dataset
+		else
+			@user_apps.each do | f |
+				@app = App.where("id = ?", f.app_id).first
+				@app_count = UserApp.where("app_id = ?", f.app_id)
+				@app_tapp_count = @app_count.length
+				@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
+
+				if @user_app.blank?
+					@tapped_by_user = 0
+				else
+					@tapped_by_user = 1
+				end
+
+				@dataset = {:app_id => @app.id, :app_name => @app.name, :app_icon => @app.icon_url, :app_link => @app.link, :app_category => @app.category, :app_description => @app.description, :app_package_name => @app.package_name, :tapp_count => @app_tapp_count, :tapped_by_user => @tapped_by_user}
+				@data << @dataset
+			end
 		end
 
 		respond_to do |format|

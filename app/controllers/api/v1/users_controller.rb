@@ -1076,55 +1076,6 @@ class API::V1::UsersController < ApplicationController
 	    end
 	end
 
-	def friends_app
-		@app = App.where("package_name = ?", params[:package]).first
-
-		counter = 0
-
-		@data = []
-		@dataset = {}
-
-		# check if current user tapped the app
-		@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
-
-		if @user_app != nil
-			counter = counter + 1
-			@user_detail = User.where("twitter_id = ?", params[:twitter_id]).first
-			@dataset = {:twitter_id => @user_detail.twitter_id, :name => @user_detail.name, :screen_name => @user_detail.screen_name, :profile_image_url => @user_detail.profile_image_url, :is_verified => @user_detail.is_verified}
-			@data << @dataset
-		end
-
-		# get all friends
-		@friends = Friend.where(friend_id:, params[:twitter_id])
-
-		if @friends != nil
-			@friends.each do | f |
-				@app_user = UserApp.where("user_id = ? AND app_id = ?", f.user_id, @app.id)
-
-				if counter < 5
-					if @app_user != nil
-						counter = counter + 1
-						@user_details = User.where("twitter_id = ?", f.user_id).first
-						@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :is_verified => @user_details.is_verified}
-					end
-				else
-					break
-				end
-
-				@data << @dataset
-			end
-		end
-
-		respond_to do |format|
-	      if @data.length > 0
-	        format.json { render json: @data, status: :ok }
-	      else
-	        format.json { render json: @data, status: :unprocessable_entity }
-	      end
-	    end
-	end
-
-
 	private
 
 	def user_params

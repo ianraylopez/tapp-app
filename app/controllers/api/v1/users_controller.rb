@@ -1090,7 +1090,7 @@ class API::V1::UsersController < ApplicationController
 		if @user_app != nil
 			counter = counter + 1
 			@user_detail = User.where("twitter_id = ?", params[:twitter_id]).first
-			@dataset = {:twitter_id => @user_detail.twitter_id, :name => @user_detail.name, :screen_name => @user_detail.screen_name, :profile_image_url => 		@user_detail.profile_image_url, :is_verified => @user_detail.is_verified}
+			@dataset = {:twitter_id => @user_detail.twitter_id, :name => @user_detail.name, :screen_name => @user_detail.screen_name, :profile_image_url => @user_detail.profile_image_url, :is_verified => @user_detail.is_verified, :counter => counter}
 			@data << @dataset
 		end
 
@@ -1104,8 +1104,8 @@ class API::V1::UsersController < ApplicationController
 				if counter < 5
 					if @app_user != nil
 						counter = counter + 1
-						@user_details = User.where("twitter_id = ?", f.user_id).first
-						@dataset = {:twitter_id => @user_details.twitter_id, :name => @user_details.name, :screen_name => @user_details.screen_name, :profile_image_url => @user_details.profile_image_url, :is_verified => @user_details.is_verified}
+						@ud = User.where("twitter_id = ?", f.user_id).first
+						@dataset = {:twitter_id => @ud.twitter_id, :name => @ud.name, :screen_name => @ud.screen_name, :profile_image_url => @ud.profile_image_url, :is_verified => @ud.is_verified, :counter => counter}
 					
 						@data << @dataset	
 					end

@@ -1102,7 +1102,7 @@ class API::V1::UsersController < ApplicationController
 				@app_user = UserApp.where("user_id = ? AND app_id = ?", f.user_id, @app.id)
 
 				if counter < 5
-					if @app_user != nil
+					if !@app_user.blank?
 						counter = counter + 1
 						@ud = User.where("twitter_id = ?", f.user_id).first
 						@dataset = {:twitter_id => @ud.twitter_id, :name => @ud.name, :screen_name => @ud.screen_name, :profile_image_url => @ud.profile_image_url, :is_verified => @ud.is_verified, :counter => counter}

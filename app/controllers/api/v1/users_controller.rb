@@ -1087,7 +1087,7 @@ class API::V1::UsersController < ApplicationController
 		# check if current user tapped the app
 		@user_app = UserApp.where("user_id = ? AND app_id = ?", params[:twitter_id], @app.id)
 
-		if @user_app != nil
+		if !@user_app.blank?
 			counter = counter + 1
 			@user_detail = User.where("twitter_id = ?", params[:twitter_id]).first
 			@dataset = {:twitter_id => @user_detail.twitter_id, :name => @user_detail.name, :screen_name => @user_detail.screen_name, :profile_image_url => @user_detail.profile_image_url, :is_verified => @user_detail.is_verified, :counter => counter}

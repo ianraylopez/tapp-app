@@ -837,7 +837,8 @@ class API::V1::UsersController < ApplicationController
 
 	def popular_apps_followers
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first
-		@followers = Friend.where("user_id = ?", params[:twitter_id])
+		#@followers = Friend.where("user_id = ?", params[:twitter_id])
+		@followers = Friend.where("friend_id = ?", params[:twitter_id])
 
 		@friends = []
 		@followers.each { |f| @friends << f.friend_id} 

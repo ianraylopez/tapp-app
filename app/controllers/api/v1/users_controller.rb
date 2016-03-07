@@ -839,9 +839,10 @@ class API::V1::UsersController < ApplicationController
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first
 		#@followers = Friend.where("user_id = ?", params[:twitter_id])
 		@followers = Friend.where("friend_id = ?", params[:twitter_id])
+		#@followings = Friend.where("friend_id = ?", params[:twitter_id])
 
 		@friends = []
-		@followers.each { |f| @friends << f.friend_id} 
+		@followers.each { |f| @friends << f.user_id} 
 
 		@popular = UserApp.select('app_id, count(user_id) cnt').where(user_id: @friends).group("app_id").order("cnt desc").limit(30)
 

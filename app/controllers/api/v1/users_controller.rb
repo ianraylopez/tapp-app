@@ -807,7 +807,7 @@ class API::V1::UsersController < ApplicationController
 
 	def popular_apps_overall
 		@user = User.where("twitter_id = ?", params[:twitter_id]).first
-		@popular = UserApp.select('app_id, count(user_id) cnt').group("app_id").order("cnt desc").limit(30)
+		@popular = UserApp.select('app_id, count(user_id) cnt').group("app_id").order("cnt desc").limit(60)
 
 		@data = []
 		@dataset = {}
@@ -844,7 +844,7 @@ class API::V1::UsersController < ApplicationController
 		@friends = []
 		@followers.each { |f| @friends << f.user_id} 
 
-		@popular = UserApp.select('app_id, count(user_id) cnt').where(user_id: @friends).group("app_id").order("cnt desc").limit(30)
+		@popular = UserApp.select('app_id, count(user_id) cnt').where(user_id: @friends).group("app_id").order("cnt desc").limit(60)
 
 		@data = []
 		@dataset = {}

@@ -776,7 +776,8 @@ class API::V1::UsersController < ApplicationController
 	end
 
 	def search_app
-		@result = App.where("name LIKE ? OR package_name LIKE ?", "%#{params[:q]}%", "%#{params[:q]}%").limit(20)
+		@result = App.where("lower(name) LIKE ? OR lower(package_name) LIKE ?", "%#{params[:q]}.downcase%", "%#{params[:q].downcase}%").limit(20)
+		#@result = User.where("lower(name) LIKE ? OR lower(screen_name) LIKE ?", "%#{params[:q].downcase}%", "%#{params[:q].downcase}%").limit(20)
 
 		@data = []
 		@dataset = {}
